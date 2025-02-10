@@ -94,7 +94,8 @@ const authController = {
       const token = createToken(user._id);
       res.cookie("token", token, {
         httpOnly: true,
-        sameSite: "Strict",
+        secure: true,
+        sameSite: "None",
         maxAge: 24 * 60 * 60 * 1000,
       });
 
@@ -203,7 +204,8 @@ const authController = {
       const token = createToken(user._id);
       res.cookie("token", token, {
         httpOnly: true,
-        sameSite: "Strict",
+        secure: true,
+        sameSite: "None",
         maxAge: 24 * 60 * 60 * 1000,
       });
 
