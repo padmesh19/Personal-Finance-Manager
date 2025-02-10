@@ -2,7 +2,7 @@ import moment from 'moment'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Loader2, MoveDownLeft, MoveUpRight } from 'lucide-react'
-import Cards from './components/cards'
+import Cards from './components/Cards'
 import { IncomeExpenseChart } from './components/IncomeExpenseChart'
 import { useEffect } from 'react'
 import { fetchData } from '@/redux/features/dashboardSlice'
