@@ -5,7 +5,7 @@ const app = require('./app');
 mongoose.connect(MONGODB_URI)
     .then(() => {
         console.log('Connected to the database...');
-        app.listen(PORT, () => {
+        app.listen(`${PORT}/api/v1`, () => {
             console.log(`Server running at http://localhost:${PORT}`);
         });
     })
