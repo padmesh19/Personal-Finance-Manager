@@ -21,14 +21,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "INR",
     },
-    notification: {
-      type: Boolean,
-      default: true,
-    },
-    category_ids: {
-      type: Array,
-      default: [],
-    },
     mfaSecret: {
       type: Number,
     },

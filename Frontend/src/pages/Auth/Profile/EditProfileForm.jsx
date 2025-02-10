@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button'
-import { DatePicker } from '@/components/ui/datepicker'
 import {
     Dialog,
     DialogContent,
@@ -8,13 +7,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useEffect, useState } from 'react'
@@ -22,9 +14,10 @@ import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
 import userServices from '@/services/userService'
 import { Switch } from '@/components/ui/switch'
+import { setUser } from '@/redux/features/userSlice'
 
 export default function EditProfileForm({ isOpen, toggle, data }) {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const [profileData, setProfileData] = useState({
         name: data?.name || '',
         email: data?.email || '',
@@ -47,13 +40,8 @@ export default function EditProfileForm({ isOpen, toggle, data }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (profileData?.mfaEnabled === false) {
-            setProfileData((state) => ({
-                ...state,
-                mfaSecret: '',
-            }))
-        }
         const response = await userServices.updateProfile(profileData)
+        dispatch(setUser(response.data))
         if (response.status == 200) {
             toggle()
             toast.success('Profile updated successfully')

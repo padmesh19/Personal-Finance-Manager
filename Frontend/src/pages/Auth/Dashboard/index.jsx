@@ -17,7 +17,6 @@ const Dashboard = () => {
 
     let todayTransactions = null,
         yesterdayTransactions = null
-    console.log(transactions)
     if (transactions && transactions?.length) {
         todayTransactions = transactions?.filter(
             (transaction) => transaction.date === today
@@ -33,13 +32,13 @@ const Dashboard = () => {
     return (
         <>
             {!isLoading ? (
-                <div className="px-14 pb-10 mt-4 flex flex-col gap-4">
+                <div className="lg:px-10 px-4 pt-4 pb-10 min-w-screen flex flex-col gap-4">
                     <span className="text-3xl font-semibold text-slate-700">
                         Dashboard
                     </span>
-                    <div className="flex gap-4 w-full flex-col">
-                        <div className="w-full flex ">
-                            <div className="flex flex-wrap gap-6 w-8/12">
+                    <div className="flex gap-8 w-full flex-col">
+                        <div className="w-full flex flex-col-reverse sm:flex-row gap-4 justify-between">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-start gap-8">
                                 {dashboard &&
                                     Object.entries(dashboard).map(
                                         ([key, value], index) => (
@@ -50,18 +49,18 @@ const Dashboard = () => {
                                         )
                                     )}
                             </div>
-                            <div className="w-4/12">
+                            <div className="w-full max-w-[400px]">
                                 {dashboard && (
                                     <IncomeExpenseChart data={dashboard} />
                                 )}
                             </div>
                         </div>
                         <div className="flex w-full gap-6">
-                            <div className="flex flex-col mt-6 w-full">
+                            <div className="flex flex-col w-full">
                                 <div className="text-2xl font-medium text-slate-700 mb-4">
                                     Transactions
                                 </div>
-                                <div className="flex bg-white px-6 py-4 w-full border border-slate-100">
+                                <div className="flex bg-white sm:px-6 py-4 w-full border border-slate-100">
                                     <div className="w-full">
                                         <div className="flex flex-col gap-6">
                                             {todayTransactions?.length > 0 && (

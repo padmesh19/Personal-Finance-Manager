@@ -9,14 +9,21 @@ import { KeyRound, Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import authServices from '@/services/authServices'
 import EditProfileForm from './EditProfileForm'
+import ConfirmFormProfile from './ConfirmFormProfile'
 import { useState } from 'react'
 
 const Profile = () => {
     const { user } = useSelector(userState)
     const [isOpen, setIsOpen] = useState(false)
     const [data, setData] = useState(null)
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+
     const toggle = () => {
         setIsOpen(!isOpen)
+    }
+
+    const deleteToggle = () => {
+        setIsDeleteOpen(!isDeleteOpen)
     }
 
     const handleResetPassword = async (e) => {
@@ -24,9 +31,14 @@ const Profile = () => {
         if (confirm('Do you really want to Change your password')) {
             try {
                 const response = await authServices.forgotPassword(user?.email)
-
                 if (response.status === 200) {
-                    toast.success('Password reset Link sent to mail')
+                    const response = await authServices.logout()
+                    toast.success('Reset Link sent to mail and Logout Successful')
+                    dispatch(clearUser())
+                    navigate('/auth/login', {
+                        replace: true,
+                        state: { from: location },
+                    })
                 }
             } catch (error) {
                 toast.error(error.response.data.message)
@@ -134,7 +146,13 @@ const Profile = () => {
                                 >
                                     <Pencil />
                                 </Button>
-                                <Button variant="destructive" className="w-10">
+                                <Button
+                                    variant="destructive"
+                                    className="w-10"
+                                    onClick={() => {
+                                        setIsDeleteOpen(true)
+                                    }}
+                                >
                                     <Trash2 />
                                 </Button>
                             </div>
@@ -143,6 +161,10 @@ const Profile = () => {
                 </div>
             </div>
             <EditProfileForm isOpen={isOpen} toggle={toggle} data={data} />
+            <ConfirmFormProfile
+                isDeleteOpen={isDeleteOpen}
+                deleteToggle={deleteToggle}
+            />
         </>
     )
 }

@@ -26,7 +26,7 @@ export function IncomeExpenseChart({data}) {
   ]
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col w-full">
       <CardHeader className="items-center pb-0">
         <CardTitle className="text-2xl text-slate-800">
           Income vs Expense
@@ -71,7 +71,7 @@ export function IncomeExpenseChart({data}) {
                           className="fill-foreground text-3xl font-bold"
                         >
                           ₹
-                          {income.toLocaleString("en-US", {
+                          {remainingIncome.toLocaleString("en-US", {
                             maximumFractionDigits: 2,
                             notation: "compact",
                             compactDisplay: "short",
@@ -82,7 +82,7 @@ export function IncomeExpenseChart({data}) {
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Total Income
+                          Balance
                         </tspan>
                       </text>
                     )

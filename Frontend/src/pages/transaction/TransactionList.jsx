@@ -149,7 +149,9 @@ export default function TransactionList() {
     }
 
     function exportTransaction() {
-        dispatch(exportTransactions(transactionFilters))
+        if (confirm("The Filtered data will be exported. Click OK to export PDF?")) {
+            dispatch(exportTransactions(transactionFilters))
+        }
     }
 
     return (

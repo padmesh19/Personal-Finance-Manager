@@ -36,7 +36,7 @@ const data = [
 const Cards = ({item}) => {
   const getData = data.find(i => i.title === item.key)
   return (
-    <Card className="w-[29%] border-0 shadow-md px-4 h-[180px]">
+    <Card className="w-full border-0 shadow-md p-4 h-full">
       <CardHeader className="flex justify-between items-start flex-row">
         <div className="flex flex-col gap-2">
           <CardTitle
