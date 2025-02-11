@@ -31,22 +31,63 @@ export default function AddBudgetForm({ isAddOpen, addToggle, currCategory }) {
         category_id: '',
     })
 
+    const [errors, setErrors] = useState({})
+
+    const validateInputs = () => {
+        let valid = true
+        let newErrors = {}
+
+        // Amount validation
+        if (!budgetData.amount) {
+            newErrors.amount = 'Amount is required.'
+            valid = false
+        } else if (isNaN(budgetData.amount) || Number(budgetData.amount) <= 0) {
+            newErrors.amount = 'Amount must be a positive number.'
+            valid = false
+        }
+
+        // Start date validation
+        if (!budgetData.startDate) {
+            newErrors.startDate = 'Start date is required.'
+            valid = false
+        }
+
+        // End date validation (if provided, it must be after start date)
+        if (
+            budgetData.endDate &&
+            new Date(budgetData.endDate) <= new Date(budgetData.startDate)
+        ) {
+            newErrors.endDate = 'End date must be after the start date.'
+            valid = false
+        }
+
+        // Category validation
+        if (!budgetData.category_id) {
+            newErrors.category_id = 'Category is required.'
+            valid = false
+        }
+
+        setErrors(newErrors)
+        return valid
+    }
+
     const handleSubmit = async () => {
+        if (!validateInputs()) return
+
         try {
-            const response = await dispatch(addBudget(budgetData)).unwrap()
+            await dispatch(addBudget(budgetData)).unwrap()
 
-            // Success toast notification
             toast.success('Budget added successfully!')
-
             addToggle()
+
             setBudgetData({
                 amount: '',
                 startDate: new Date(),
                 endDate: '',
                 category_id: '',
             })
+            setErrors({})
         } catch (error) {
-            // Error toast notification
             toast.error('Budget already exists for this category!')
         }
     }
@@ -70,48 +111,58 @@ export default function AddBudgetForm({ isAddOpen, addToggle, currCategory }) {
                         <Label htmlFor="amount" className="text-right">
                             Amount
                         </Label>
-                        <Input
-                            id="amount"
-                            type="number"
-                            onChange={(e) => {
-                                inputData('amount', e.target.value)
-                            }}
-                            className="col-span-3"
-                        />
-                    </div>
-                    <div className="grid w-full grid-cols-4 items-center gap-4">
-                        <Label htmlFor="" className="text-right">
-                            Start Date
-                        </Label>
                         <div className="col-span-3">
-                            <DatePicker
-                                setValue={(val) => {
-                                    inputData('startDate', val)
-                                }}
+                            <Input
+                                id="amount"
+                                type="number"
+                                value={budgetData.amount}
+                                onChange={(e) =>
+                                    inputData('amount', e.target.value)
+                                }
                             />
+                            {errors.amount && (
+                                <p className="text-red-500 text-sm">
+                                    {errors.amount}
+                                </p>
+                            )}
                         </div>
                     </div>
+
                     <div className="grid w-full grid-cols-4 items-center gap-4">
-                        <Label htmlFor="" className="text-right">
-                            End Date
-                        </Label>
+                        <Label className="text-right">Start Date</Label>
                         <div className="col-span-3">
                             <DatePicker
-                                setValue={(val) => {
-                                    inputData('endDate', val)
-                                }}
+                                setValue={(val) => inputData('startDate', val)}
                             />
+                            {errors.startDate && (
+                                <p className="text-red-500 text-sm">
+                                    {errors.startDate}
+                                </p>
+                            )}
                         </div>
                     </div>
+
                     <div className="grid w-full grid-cols-4 items-center gap-4">
-                        <Label htmlFor="" className="text-right">
-                            Category
-                        </Label>
+                        <Label className="text-right">End Date</Label>
+                        <div className="col-span-3">
+                            <DatePicker
+                                setValue={(val) => inputData('endDate', val)}
+                            />
+                            {errors.endDate && (
+                                <p className="text-red-500 text-sm">
+                                    {errors.endDate}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="grid w-full grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Category</Label>
                         <div className="col-span-3">
                             <Select
-                                onValueChange={(e) => {
-                                    inputData('category_id', e)
-                                }}
+                                onValueChange={(val) =>
+                                    inputData('category_id', val)
+                                }
                             >
                                 <SelectTrigger className="h-9 bg-white">
                                     <SelectValue placeholder="Select a category" />
@@ -127,16 +178,21 @@ export default function AddBudgetForm({ isAddOpen, addToggle, currCategory }) {
                                     ))}
                                 </SelectContent>
                             </Select>
+                            {errors.category_id && (
+                                <p className="text-red-500 text-sm">
+                                    {errors.category_id}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>
 
                 <DialogFooter>
-                    <Button type="submit" variant="outline" onClick={addToggle}>
+                    <Button type="button" variant="outline" onClick={addToggle}>
                         Cancel
                     </Button>
                     <Button
-                        type="submit"
+                        type="button"
                         className="bg-orange-600 hover:bg-orange-700"
                         onClick={handleSubmit}
                     >
