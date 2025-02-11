@@ -68,11 +68,11 @@ const budgetController = {
       };
 
       if (start_date) {
-        matchConditions.period = { startDate: { $gte: new Date(start_date) } };
+        matchConditions["period.startDate"] = { $gte: new Date(start_date) };
       }
 
       if (end_date) {
-        matchConditions.period = { endDate: { $gte: new Date(end_date) } };
+        matchConditions["period.endDate"] = { $lte: new Date(end_date) };
       }
 
       if (category_id) {
@@ -80,7 +80,6 @@ const budgetController = {
           $eq: new mongoose.Types.ObjectId(category_id),
         };
       }
-      console.log(matchConditions);
       const budgets = await Budget.aggregate([
         {
           $match: matchConditions,

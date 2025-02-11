@@ -18,7 +18,7 @@ const printer = new PdfPrinter(fonts);
 const transactionController = {
   // Get Transactions
   getTransactions: async (req, res) => {
-    const user_id = req.user.id;
+    const user_id = req.user._id;
     const { start_date, end_date, transaction_type, category_id } = req.query;
     try {
       const matchConditions = {
@@ -185,6 +185,7 @@ const transactionController = {
       res.status(500).json({ message: error.message });
     }
   },
+  
   exportTransactions: async (req, res) => {
     const user_id = req.user._id;
     const { start_date, end_date, transaction_type, category_id } = req.query;
