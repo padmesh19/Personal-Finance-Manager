@@ -18,7 +18,7 @@ const printer = new PdfPrinter(fonts);
 const transactionController = {
   // Get Transactions
   getTransactions: async (req, res) => {
-    const user_id = req.user._id;
+    const user_id = req.user.id;
     const { start_date, end_date, transaction_type, category_id } = req.query;
     try {
       const matchConditions = {
@@ -112,7 +112,7 @@ const transactionController = {
         description,
         transaction_type,
       });
-      await transaction.save()
+      await transaction.save();
       res.status(201).json(transaction);
     } catch (error) {
       res.status(500).json({ message: error.message });
