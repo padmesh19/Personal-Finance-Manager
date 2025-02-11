@@ -14,7 +14,6 @@ const OTPverification = () => {
   let otp = "";
   
   const navigate = useNavigate()
-  
 
   const handleOTPverification = async e => {
     e.preventDefault()

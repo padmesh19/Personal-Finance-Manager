@@ -1,17 +1,17 @@
 const mongoose = require("mongoose");
 const Budget = require("../models/Budget");
-const PdfPrinter = require('pdfmake');
-const fs = require('fs');
+const PdfPrinter = require("pdfmake");
+const fs = require("fs");
 const Transaction = require("../models/Transaction");
 const moment = require("moment");
 
 const fonts = {
   Roboto: {
-    normal: 'pdfs/fonts/Roboto-Regular.ttf',
-    bold: 'pdfs/fonts/Roboto-Medium.ttf',
-    italics: 'pdfs/fonts/Roboto-Italic.ttf',
-  }
-}
+    normal: "pdfs/fonts/Roboto-Regular.ttf",
+    bold: "pdfs/fonts/Roboto-Medium.ttf",
+    italics: "pdfs/fonts/Roboto-Italic.ttf",
+  },
+};
 
 const printer = new PdfPrinter(fonts);
 
@@ -24,29 +24,31 @@ const transactionController = {
       const matchConditions = {
         user_id: { $eq: user_id },
       };
-  
+
       if (start_date) {
         matchConditions.date = { $gte: new Date(start_date) };
       }
-  
+
       if (end_date) {
         matchConditions.date = matchConditions.date || {};
         matchConditions.date.$lte = new Date(end_date);
       }
-  
+
       if (transaction_type) {
         matchConditions.transaction_type = { $eq: transaction_type };
       }
-  
+
       if (category_id) {
-        matchConditions.category_id = { $eq: new mongoose.Types.ObjectId(category_id) };
+        matchConditions.category_id = {
+          $eq: new mongoose.Types.ObjectId(category_id),
+        };
       }
 
       const transactions = await Transaction.aggregate([
         {
           $match: matchConditions,
         },
-        { $sort: { date: -1, createdAt:-1 } },
+        { $sort: { date: -1, createdAt: -1 } },
         {
           $lookup: {
             from: "categories",
@@ -69,7 +71,7 @@ const transactionController = {
             amount: 1,
             description: 1,
             transaction_type: 1,
-            category_id:1
+            category_id: 1,
           },
         },
       ]);
@@ -102,7 +104,7 @@ const transactionController = {
       req.body;
     const transaction_date = moment(date).format("YYYY-MM-DD");
     try {
-      const transaction = await Transaction.create({
+      const transaction = new Transaction({
         user_id,
         category_id,
         amount,
@@ -110,6 +112,7 @@ const transactionController = {
         description,
         transaction_type,
       });
+      await transaction.save()
       res.status(201).json(transaction);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -189,29 +192,31 @@ const transactionController = {
       const matchConditions = {
         user_id: { $eq: user_id },
       };
-  
+
       if (start_date) {
         matchConditions.date = { $gte: new Date(start_date) };
       }
-  
+
       if (end_date) {
         matchConditions.date = matchConditions.date || {};
         matchConditions.date.$lte = new Date(end_date);
       }
-  
+
       if (transaction_type) {
         matchConditions.transaction_type = { $eq: transaction_type };
       }
-  
+
       if (category_id) {
-        matchConditions.category_id = { $eq: new mongoose.Types.ObjectId(category_id) };
+        matchConditions.category_id = {
+          $eq: new mongoose.Types.ObjectId(category_id),
+        };
       }
 
       const transactions = await Transaction.aggregate([
         {
           $match: matchConditions,
         },
-        { $sort: { date: -1, createdAt:-1 } },
+        { $sort: { date: -1, createdAt: -1 } },
         {
           $lookup: {
             from: "categories",
@@ -232,63 +237,74 @@ const transactionController = {
             description: 1,
             transaction_type: 1,
             category_id: 1,
-            category:1
+            category: 1,
           },
         },
       ]);
 
-      if(!transactions.length){
-        return res.status(400).send("No data to export")
+      if (!transactions.length) {
+        return res.status(400).send("No data to export");
       }
-      const pdfData = transactions.map((item)=>{
-         let row = [];
-         row.push(item?.amount||'')
-         row.push(item?.date||'')
-         row.push(item?.description||'')
-         row.push(item?.transaction_type||'')
-         row.push(item?.category?.[0]?.name||'')
+      const pdfData = transactions.map((item) => {
+        let row = [];
+        row.push(item?.amount || "");
+        row.push(item?.date || "");
+        row.push(item?.description || "");
+        row.push(item?.transaction_type || "");
+        row.push(item?.category?.[0]?.name || "");
         return row;
-      })
+      });
 
       const docDefinition = {
-        footer: function(currentPage, pageCount) { return currentPage.toString() + ' of ' + pageCount; },
-        layout: 'lightHorizontalLines',
+        footer: function (currentPage, pageCount) {
+          return currentPage.toString() + " of " + pageCount;
+        },
+        layout: "lightHorizontalLines",
         content: [
-          {text: 'Transactions', style: 'header'},
-          {text: 'List of transaction based on your filters', style: 'subheader'},
+          { text: "Transactions", style: "header" },
           {
-            style: 'tableExample',
+            text: "List of transaction based on your filters",
+            style: "subheader",
+          },
+          {
+            style: "tableExample",
             table: {
               headerRows: 1,
-              widths: [ '*', '*','auto', 100, '*' ],
+              widths: ["*", "*", "auto", 100, "*"],
               body: [
-                [{ text: 'Amount', bold: true,fillColor:"#ddd" }, { text: 'Date', bold: true,fillColor:"#ddd" }, { text: 'Description', bold: true,fillColor:"#ddd" },{ text: 'Type', bold: true,fillColor:"#ddd" },{ text: 'Category', bold: true,fillColor:"#ddd" }],
-                ...pdfData
-              ]
-            }
+                [
+                  { text: "Amount", bold: true, fillColor: "#ddd" },
+                  { text: "Date", bold: true, fillColor: "#ddd" },
+                  { text: "Description", bold: true, fillColor: "#ddd" },
+                  { text: "Type", bold: true, fillColor: "#ddd" },
+                  { text: "Category", bold: true, fillColor: "#ddd" },
+                ],
+                ...pdfData,
+              ],
+            },
           },
         ],
         styles: {
           header: {
             fontSize: 18,
             bold: true,
-            margin: [0, 0, 0, 10]
+            margin: [0, 0, 0, 10],
           },
           subheader: {
             fontSize: 14,
             italics: true,
-            margin: [0, 10, 0, 5]
+            margin: [0, 10, 0, 5],
           },
           tableExample: {
-            margin: [0, 5, 0, 15]
+            margin: [0, 5, 0, 15],
           },
           tableHeader: {
             bold: true,
             fontSize: 13,
-            color: 'black'
-          }
+            color: "black",
+          },
         },
-      }
+      };
       const filePath = "pdfs/sample.pdf";
       const pdfDoc = printer.createPdfKitDocument(docDefinition);
       pdfDoc.pipe(fs.createWriteStream(filePath));
@@ -303,8 +319,8 @@ const transactionController = {
         });
       });
       fs.truncate(filePath, 0, function () {
-        console.log('File is truncated !!!')
-    });
+        console.log("File is truncated !!!");
+      });
       res.status(200).send(data);
     } catch (error) {
       res.status(500).json({ message: error.message });

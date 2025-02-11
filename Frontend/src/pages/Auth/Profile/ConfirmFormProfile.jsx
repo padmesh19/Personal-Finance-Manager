@@ -16,8 +16,13 @@ export default function ConfirmFormProfile({ isDeleteOpen, deleteToggle }) {
         e.preventDefault();
         const response = await userServices.deleteProfile();
         if (response.status == 200) {
-            deleteToggle()
-            toast.success('Profile updated successfully')
+            const response = await authServices.logout()
+            toast.success('Profile deleted successfully')
+            dispatch(clearUser())
+            navigate('/auth/login', {
+                replace: true,
+                state: { from: location },
+            })
         }
     }
 

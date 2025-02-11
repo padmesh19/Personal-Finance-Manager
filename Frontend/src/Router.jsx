@@ -14,6 +14,7 @@ import ForgotPassword from './pages/Auth/ForgotPassword'
 import ResetPassword from './pages/Auth/ResetPassword'
 import OTPverification from './pages/Auth/OTPVerfication'
 import Profile from './pages/Auth/Profile/Profile'
+import MfaEnabled from './pages/Auth/MfaEnabled'
 const routes = [
     {
         path: '/auth',
@@ -38,6 +39,10 @@ const routes = [
             {
                 path: 'otp-verification',
                 element: <OTPverification />,
+            },
+            {
+                path: 'mfa-enabled',
+                element: <MfaEnabled />,
             },
         ],
     },

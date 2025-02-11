@@ -11,5 +11,10 @@ budgetRouter.delete(
   authMiddleware,
   budgetController.deleteBudget
 );
+budgetRouter.get(
+  "/download",
+  authMiddleware,
+  budgetController.exportBudgets
+);
 
 module.exports = budgetRouter;

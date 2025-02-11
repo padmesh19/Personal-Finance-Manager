@@ -26,7 +26,6 @@ export default function BudgetForm({ isOpen, toggle, data, currCategory }) {
   const dispatch = useDispatch();
   const [budgetData, setBudgetData] = useState({
     amount: data?.amount || "",
-    spent: data?.spent || "",
     startDate: data?.period?.startDate || "",
     endDate: data?.period?.endDate || "",
     category_id: data?.category_id || ""
@@ -36,7 +35,6 @@ export default function BudgetForm({ isOpen, toggle, data, currCategory }) {
     if (data) {
       setBudgetData({
         amount: data?.amount || "",
-        spent: data?.spent || "",
         startDate: data?.period?.startDate || "",
         endDate: data?.period?.endDate || "",
         category_id: data?.category_id || "",
@@ -75,20 +73,6 @@ export default function BudgetForm({ isOpen, toggle, data, currCategory }) {
               value={budgetData?.amount}
               onChange={(e) => {
                 inputData("amount", e.target.value);
-              }}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="spent" className="text-right">
-              Spent
-            </Label>
-            <Input
-              id="spent"
-              type="number"
-              value={budgetData?.spent}
-              onChange={(e) => {
-                inputData("spent", e.target.value);
               }}
               className="col-span-3"
             />

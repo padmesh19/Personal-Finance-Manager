@@ -26,12 +26,8 @@ import { useSelector } from 'react-redux'
 
 
 const SIDE = 'right'
-const TRANSACTION_TYPE = [
-    'income',
-    'expense'
-]
 
-export function Filters({ applyFilters, transactionFilters, setFilterData }) {
+export function Filters({ applyFilters, budgetFilters, setFilterData }) {
     const { categories } = useSelector(categoryState)
     const [open, setOpen] = useState(false)
 
@@ -49,8 +45,10 @@ export function Filters({ applyFilters, transactionFilters, setFilterData }) {
             </SheetTrigger>
             <SheetContent side={SIDE}>
                 <SheetHeader>
-                    <SheetTitle>Transaction Filters</SheetTitle>
-                    <SheetDescription>Filter your transactions here</SheetDescription>
+                    <SheetTitle>Budget Filters</SheetTitle>
+                    <SheetDescription>
+                        Filter your budgets here
+                    </SheetDescription>
                 </SheetHeader>
                 <div className="flex flex-col gap-8 py-8">
                     <div className="flex flex-col w-full">
@@ -62,7 +60,7 @@ export function Filters({ applyFilters, transactionFilters, setFilterData }) {
                                 onValueChange={(e) =>
                                     setFilterData('category_id', e)
                                 }
-                                value={transactionFilters.category_id}
+                                value={budgetFilters.category_id}
                             >
                                 <SelectTrigger className="h-9 bg-white">
                                     <SelectValue placeholder="Select a category" />
@@ -80,42 +78,15 @@ export function Filters({ applyFilters, transactionFilters, setFilterData }) {
                             </Select>
                         </div>
                     </div>
-                    <div className="flex flex-col w-full">
-                        <Label htmlFor="" className="mb-2">
-                            Transaction Type
-                        </Label>
-                        <div className="col-span-3">
-                            <Select
-                                onValueChange={(e) =>
-                                    setFilterData('transaction_type', e)
-                                }
-                                value={transactionFilters.transaction_type}
-                            >
-                                <SelectTrigger className="h-9 bg-white">
-                                    <SelectValue placeholder="Select a transaction type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {TRANSACTION_TYPE.map((transaction) => (
-                                        <SelectItem
-                                            key={transaction}
-                                            value={transaction}
-                                        >
-                                            {transaction}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
+
                     <div className="flex flex-col w-full">
                         <Label htmlFor="spent" className="mb-2">
                             From Date
                         </Label>
                         <div className="col-span-3">
                             <DatePicker
-                                value={transactionFilters?.start_date}
+                                value={budgetFilters?.start_date}
                                 setValue={(val) => {
-                                    console.log(val)
                                     setFilterData('start_date', val)
                                 }}
                             />
@@ -127,7 +98,7 @@ export function Filters({ applyFilters, transactionFilters, setFilterData }) {
                         </Label>
                         <div className="col-span-3">
                             <DatePicker
-                                value={transactionFilters?.end_date}
+                                value={budgetFilters?.end_date}
                                 setValue={(val) => {
                                     setFilterData('end_date', val)
                                 }}
@@ -136,7 +107,9 @@ export function Filters({ applyFilters, transactionFilters, setFilterData }) {
                     </div>
                 </div>
                 <SheetFooter>
-                        <Button type="button" onClick={filterSubmit}>Save changes</Button>
+                    <Button type="button" onClick={filterSubmit}>
+                        Save changes
+                    </Button>
                 </SheetFooter>
             </SheetContent>
         </Sheet>

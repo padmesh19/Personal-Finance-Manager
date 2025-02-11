@@ -147,6 +147,7 @@ const Profile = () => {
                                     <Pencil />
                                 </Button>
                                 <Button
+                                    type="button"
                                     variant="destructive"
                                     className="w-10"
                                     onClick={() => {

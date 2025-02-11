@@ -7,22 +7,99 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { useEffect, useState } from 'react'
-import { Pencil, Trash2, Plus, Loader2 } from 'lucide-react'
+import { Pencil, Trash2, Plus, X, FileDownIcon, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import BudgetForm from './BudgetForm'
 import BudgetDelete from './BudgetDelete'
 import AddBudgetForm from './AddBudgetForm'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { categoryState } from '@/redux/features/categorySlice'
+import { useSearchParams } from 'react-router-dom'
+import { exportBudgets, fetchBudget } from '@/redux/features/budgetSlice'
+import { Filters } from './Filters'
+import { Badge } from '@/components/ui/badge'
+
+import { format } from 'date-fns'
+
+const FiltersChip = ({ categories, budgetFilters, clearFilter }) => {
+    return (
+        <div className="flex flex-wrap gap-2">
+            {Object.keys(budgetFilters).map((key) => {
+                if (budgetFilters[key]) {
+                    let displayValue = budgetFilters[key]
+                    let displayName = key
+                    switch (key) {
+                        case 'start_date':
+                            displayValue = format(
+                                new Date(budgetFilters[key]),
+                                'PPP'
+                            )
+                            displayName = 'Start Date'
+                            break
+                        case 'end_date':
+                            displayValue = format(
+                                new Date(budgetFilters[key]),
+                                'PPP'
+                            )
+                            displayName = 'End Date'
+                            break
+                        case 'category_id':
+                            displayName = 'Category'
+                            console.log(budgetFilters[key])
+                            let categoryName = 'hiii'
+                            categories.forEach((category) => {
+                                if (category._id == budgetFilters[key]) {
+                                    categoryName = category.name
+                                }
+                            })
+                            displayValue = categoryName
+
+                            break
+                        default:
+                            break
+                    }
+                    return (
+                        <Badge
+                            key={key}
+                            variant="outline"
+                            className="bg-slate-200"
+                        >
+                            {displayName} : {displayValue}
+                            <X
+                                className="ml-2 cursor-pointer"
+                                size={16}
+                                onClick={() => clearFilter(key)}
+                            />
+                        </Badge>
+                    )
+                }
+                return null
+            })}
+        </div>
+    )
+}
 
 export default function BudgetList() {
-    const { budgets, isLoading, error } = useSelector((state) => state.budget)
+    const { budgets, isExport, isLoading, error } = useSelector(
+        (state) => state.budget
+    )
     const { categories } = useSelector(categoryState)
+    const [searchParams, setSearchParams] = useSearchParams()
+    const dispatch = useDispatch()
     const [currCategory, setCurrCategory] = useState([])
     const [isOpen, setIsOpen] = useState(false)
     const [isAddOpen, setIsAddOpen] = useState(false)
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     const [data, setData] = useState(null)
+    const [budgetFilters, setBudgetFilters] = useState({
+        start_date: data?.start_date || '',
+        end_date: data?.end_date || '',
+        category_id: data?.category_id || '',
+    })
+
+    useEffect(() => {
+        getFilterFromQueryParams()
+    }, [dispatch])
 
     const toggle = () => {
         setIsOpen(!isOpen)
@@ -39,12 +116,63 @@ export default function BudgetList() {
         setData('')
     }
 
+    const filterChanges = () => {
+        setQueryParams(budgetFilters)
+        dispatch(fetchBudget(budgetFilters))
+    }
+
+    const setFilterData = (key, value) => {
+        setBudgetFilters((state) => ({ ...state, [key]: value }))
+    }
+
+    const setQueryParams = (filters) => {
+        const params = new URLSearchParams()
+        Object.keys(filters).forEach((key) => {
+            if (filters[key]) {
+                params.set(key, filters[key])
+            }
+        })
+        setSearchParams(params)
+    }
+
+    function getFilterFromQueryParams() {
+        const filters = {}
+        searchParams.forEach((data, name) => {
+            setFilterData(name, data)
+            filters[name] = data
+        })
+        dispatch(fetchBudget(filters))
+    }
+
+    function clearFilter(key) {
+        setBudgetFilters((state) => ({ ...state, [key]: '' }))
+        const filters = { ...budgetFilters, [key]: '' }
+        const params = new URLSearchParams()
+        Object.keys(filters).forEach((key) => {
+            if (filters[key]) {
+                params.set(key, filters[key])
+            }
+        })
+        setSearchParams(params)
+        dispatch(fetchBudget(filters))
+    }
+
+    function exportBudget() {
+        if (
+    confirm(
+                'The Filtered data will be exported. Click OK to export PDF?'
+            )
+        ) {
+            dispatch(exportBudgets(budgetFilters))
+        }
+    }
+
     useEffect(() => {
         const expense_category = categories.filter(
             (data) => data.category_type == 'expense'
         )
         setCurrCategory(expense_category)
-    }, [])
+    }, [categories])
 
     return (
         <>
@@ -52,17 +180,44 @@ export default function BudgetList() {
                 <div className="h-fit max-h-[80vh] w-full flex flex-col gap-4 px-2 sm:px-10">
                     <div className="flex justify-between items-center gap-2">
                         <span className="text-xl font-semibold">Budgets</span>
-                        <Button
-                            className="bg-orange-600 hover:bg-orange-700"
-                            onClick={() => {
-                                setIsAddOpen(true)
-                            }}
-                        >
-                            <Plus />
-                            Add Budget
-                        </Button>
+                        <div className="flex items-center gap-x-3">
+                            <Filters
+                                applyFilters={filterChanges}
+                                setFilterData={setFilterData}
+                                budgetFilters={budgetFilters}
+                            />
+                            <Button variant="outline" onClick={exportBudget}>
+                                {!isExport ? (
+                                    <div className="flex gap-1 items-center">
+                                        <FileDownIcon />
+                                        <span>Export</span>
+                                    </div>
+                                ) : (
+                                    <Loader2
+                                        className="animate-spin"
+                                        size={25}
+                                        color="orange"
+                                    />
+                                )}
+                            </Button>
+                            <Button
+                                className="bg-orange-600 hover:bg-orange-700"
+                                onClick={() => {
+                                    setIsAddOpen(true)
+                                }}
+                            >
+                                <Plus />
+                                Add Budget
+                            </Button>
+                        </div>
                     </div>
-
+                    {searchParams.size > 0 && (
+                        <FiltersChip
+                            categories={categories}
+                            budgetFilters={budgetFilters}
+                            clearFilter={clearFilter}
+                        />
+                    )}
                     {!!budgets.length && (
                         <div className=" bg-white rounded-lg py-4 px-4 overflow-y-auto">
                             <Table>

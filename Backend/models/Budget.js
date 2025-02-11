@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Transaction = require("./Transaction");
 
 const budgetSchema = new mongoose.Schema(
   {
@@ -36,5 +37,35 @@ const budgetSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+budgetSchema.pre("save", async function (next) {
+  try {
+    // Find all expense transactions within the budget's time range
+    const totalSpent = await Transaction.aggregate([
+      {
+        $match: {
+          user_id: this.user_id,
+          category_id: this.category_id,
+          transaction_type: "expense",
+          date: { $gte: this.period.startDate, $lte: this.period.endDate },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalSpent: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    // Update spent amount if transactions exist
+    this.spent = totalSpent.length > 0 ? totalSpent[0].totalSpent : 0;
+
+    next();
+  } catch (error) {
+    console.error("Error calculating spent amount:", error);
+    next(error);
+  }
+});
 
 module.exports = mongoose.model("Budget", budgetSchema, "budgets");

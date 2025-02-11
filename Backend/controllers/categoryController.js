@@ -32,24 +32,12 @@ const categoryController = {
     }
   },
 
-  // Get Category
-  getCategory: async (req, res) => {
-    try {
-      category_id = req.params.id;
-      const category = await Category.findById(category_id).select("-__v");
-      if (!category)
-        return res.status(404).json({ message: "Category not found" });
-      res.status(200).json(category);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  },
-
   // Add Category
   addCategory: async (req, res) => {
     const { name, category_type } = req.body;
+    const user_id = req.user._id;
     try {
-      const category = await Category.create({ name, category_type });
+      const category = await Category.create({ name, category_type , user_id });
       res.status(201).json(category);
     } catch (error) {
       res.status(500).json({ message: error.message });

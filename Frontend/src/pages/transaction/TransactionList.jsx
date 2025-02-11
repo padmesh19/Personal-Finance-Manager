@@ -149,7 +149,11 @@ export default function TransactionList() {
     }
 
     function exportTransaction() {
-        if (confirm("The Filtered data will be exported. Click OK to export PDF?")) {
+        if (
+            confirm(
+                'The Filtered data will be exported. Click OK to export PDF?'
+            )
+        ) {
             dispatch(exportTransactions(transactionFilters))
         }
     }

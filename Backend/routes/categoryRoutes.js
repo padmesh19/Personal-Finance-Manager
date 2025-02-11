@@ -4,7 +4,6 @@ const categoryRouter = express.Router();
 const authMiddleware = require("../middlewares/authMiddleware");
 
 categoryRouter.get("/", authMiddleware, categoryController.getCategories);
-categoryRouter.get("/:id", authMiddleware, categoryController.getCategory);
 categoryRouter.post("/", authMiddleware, categoryController.addCategory);
 categoryRouter.put("/:id", authMiddleware, categoryController.updateCategory);
 categoryRouter.delete(
