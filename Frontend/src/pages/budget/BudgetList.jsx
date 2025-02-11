@@ -45,15 +45,13 @@ const FiltersChip = ({ categories, budgetFilters, clearFilter }) => {
                             break
                         case 'category_id':
                             displayName = 'Category'
-                            console.log(budgetFilters[key])
-                            let categoryName = 'hiii'
+                            let categoryName = ''
                             categories.forEach((category) => {
                                 if (category._id == budgetFilters[key]) {
                                     categoryName = category.name
                                 }
                             })
                             displayValue = categoryName
-
                             break
                         default:
                             break
@@ -178,7 +176,7 @@ export default function BudgetList() {
         <>
             <div className="flex justify-center items-start">
                 <div className="h-fit max-h-[80vh] w-full flex flex-col gap-4 px-2 sm:px-10">
-                    <div className="flex justify-between items-center gap-2">
+                    <div className="flex justify-between flex-col sm:flex-row items-center gap-2">
                         <span className="text-xl font-semibold">Budgets</span>
                         <div className="flex items-center gap-x-3">
                             <Filters

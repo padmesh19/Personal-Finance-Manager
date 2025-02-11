@@ -223,7 +223,7 @@ export default function AddGoalForm({ isAddOpen, addToggle }) {
                             </div>
                         </RadioGroup>
                         {errors.status && (
-                            <span className="text-red-500 text-sm col-span-3">
+                            <span className="text-red-500 text-sm col-span-3 ml-28">
                                 {errors.status}
                             </span>
                         )}

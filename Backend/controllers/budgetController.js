@@ -122,7 +122,6 @@ const budgetController = {
       if (!budgets) return res.status(404).json({ message: "No Data" });
       res.status(200).json(budgets);
     } catch (error) {
-      console.log(error);
       res.status(500).json({ message: error.message });
     }
   },

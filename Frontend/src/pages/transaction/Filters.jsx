@@ -115,7 +115,6 @@ export function Filters({ applyFilters, transactionFilters, setFilterData }) {
                             <DatePicker
                                 value={transactionFilters?.start_date}
                                 setValue={(val) => {
-                                    console.log(val)
                                     setFilterData('start_date', val)
                                 }}
                             />

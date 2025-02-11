@@ -50,7 +50,6 @@ const goalSlice = createSlice({
         const { deadline } = action.payload;
         const deadline_date = moment(deadline).format("YYYY-MM-DD");
         const goal = { ...action.payload, deadline: deadline_date };
-        console.log(goal)
         state.goals.unshift(goal);
       })
       .addCase(updateGoal.fulfilled, (state, action) => {

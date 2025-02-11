@@ -24,7 +24,7 @@ import {
 } from '@/redux/features/transactionSlice'
 import { Badge } from '@/components/ui/badge'
 
-const FiltersChip = ({ transactionFilters, clearFilter }) => {
+const FiltersChip = ({ transactionFilters, clearFilter, categories }) => {
     return (
         <div className="flex flex-wrap gap-2">
             {Object.keys(transactionFilters).map((key) => {
@@ -48,6 +48,13 @@ const FiltersChip = ({ transactionFilters, clearFilter }) => {
                             break
                         case 'category_id':
                             displayName = 'Category'
+                            let categoryName = ''
+                            categories.forEach((category) => {
+                                if (category._id == transactionFilters[key]) {
+                                    categoryName = category.name
+                                }
+                            })
+                            displayValue = categoryName
                             break
                         case 'transaction_type':
                             displayName = 'Transaction Type'
@@ -160,8 +167,8 @@ export default function TransactionList() {
 
     return (
         <div className="flex justify-center items-start">
-            <div className="h-fit max-h-[80vh] w-full flex flex-col gap-4 px-10">
-                <div className="flex justify-between items-center gap-2">
+            <div className="h-fit max-h-[80vh] w-full flex flex-col gap-4 px-2 sm:px-10">
+                <div className="flex justify-between flex-col sm:flex-row items-center gap-2">
                     <span className="text-xl font-semibold">Transactions</span>
                     <div className="flex items-center gap-x-3">
                         <Filters
@@ -173,7 +180,7 @@ export default function TransactionList() {
                             {!isExport ? (
                                 <div className="flex gap-1 items-center">
                                     <FileDownIcon />
-                                    <span>Export</span>
+                                    <span className="truncate">Export</span>
                                 </div>
                             ) : (
                                 <Loader2
@@ -184,7 +191,7 @@ export default function TransactionList() {
                             )}
                         </Button>
                         <Button
-                            className="bg-orange-600 hover:bg-orange-700"
+                            className="bg-orange-600 hover:bg-orange-700 truncate"
                             onClick={() => setIsAddOpen(true)}
                         >
                             <Plus />
@@ -194,6 +201,7 @@ export default function TransactionList() {
                 </div>
                 {searchParams.size > 0 && (
                     <FiltersChip
+                        categories={categories}
                         transactionFilters={transactionFilters}
                         clearFilter={clearFilter}
                     />
@@ -238,7 +246,21 @@ export default function TransactionList() {
                                         {transaction.description}
                                     </TableCell>
                                     <TableCell className="text-slate-800 font-normal">
-                                        {transaction.transaction_type}
+                                        <Badge
+                                            variant={
+                                                transaction.transaction_type ==
+                                                'income'
+                                                    ? 'success'
+                                                    : 'destructive'
+                                            }
+                                        >
+                                            {transaction.transaction_type
+                                                .charAt(0)
+                                                .toUpperCase() +
+                                                transaction.transaction_type.slice(
+                                                    1
+                                                )}
+                                        </Badge>
                                     </TableCell>
                                     <TableCell className="text-slate-800 font-normal">
                                         {categories.map((category) => {

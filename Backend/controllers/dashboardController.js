@@ -10,9 +10,11 @@ const dashboardController = {
   fetchData: async (req, res) => {
     try {
       const user_id = req.user._id;
+      const month = Number(req.query.month); // Convert to number
+      const year = Number(req.query.year); // Convert to number
 
-      const startOfMonth = moment().startOf("month").toDate();
-      const endOfMonth = moment().endOf("month").toDate();
+      const startOfMonth = new Date(year, month - 1, 1);
+      const endOfMonth = new Date(year, month, 0);
 
       const [totalExpenseAmount] = await Transaction.aggregate([
         {
@@ -29,6 +31,7 @@ const dashboardController = {
           },
         },
       ]);
+
       const [totalIncomeAmount] = await Transaction.aggregate([
         {
           $match: {
@@ -54,6 +57,7 @@ const dashboardController = {
           },
         },
       ]);
+
       const totalGoal = await Goal.aggregate([
         {
           $match: {
@@ -62,6 +66,7 @@ const dashboardController = {
           },
         },
       ]);
+
       return res.status(200).json({
         Income: totalIncomeAmount?.total || 0,
         Expense: totalExpenseAmount?.total || 0,

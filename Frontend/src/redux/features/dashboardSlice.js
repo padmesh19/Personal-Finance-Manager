@@ -20,18 +20,20 @@ const dashboardSlice = createSlice({
 
 export const { setDashboard, setIsLoading } = dashboardSlice.actions;
 
-export const fetchData = () => async (dispatch) => {
+export const fetchData = (currentMonth, currentYear) => async (dispatch) => {
     try {
-        const response = await dashboardService.fetchDashboardData();
-        console.log(response)
-        dispatch(setDashboard(response.data));
-        dispatch(setIsLoading(false));
-        return true;
+        const response = await dashboardService.fetchDashboardData(
+            currentMonth,
+            currentYear
+        )
+        dispatch(setDashboard(response.data))
+        dispatch(setIsLoading(false))
+        return true
     } catch {
-        dispatch(setIsLoading(false));
-        return false;
+        dispatch(setIsLoading(false))
+        return false
     }
-};
+}
 
 export const dashboardState = (state) => state.dashboard;
 
