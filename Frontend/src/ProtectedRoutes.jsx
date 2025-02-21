@@ -16,12 +16,19 @@ const ProtectedRoute = () => {
     useEffect(() => {
         if (!user) {
             dispatch(authLoader())
+        }
+    }, [])
+
+    useEffect(() => {
+        if (user) {
             dispatch(fetchBudget())
             dispatch(fetchCategory())
             dispatch(fetchTransaction())
             dispatch(fetchGoal())
         }
-    }, [])
+    },[user])
+
+    
 
     if (isLoading) {
         return (

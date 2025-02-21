@@ -13,6 +13,7 @@ const userSlice = createSlice({
     },
     clearUser: (state) => {
       state.user = null;
+      console.log(state.user)
     },
     setIsLoading: (state, action) => {
       state.isLoading = action.payload;

@@ -98,6 +98,22 @@ const goalController = {
       res.status(500).json({ message: error.message });
     }
   },
+
+  contributeGoal: async (req, res) => {
+    const { currentAmount } = req.body;
+    try {
+      const goal_id = req.params.id;
+      const goal = await Goal.findById(goal_id);
+      if (!goal) return res.status(404).json({ message: "Goal not found" });
+
+      goal.currentAmount = currentAmount || goal.currentAmount;
+      await goal.save();
+
+      res.status(200).json(goal);
+    } catch (error) {
+      
+    }
+  }
 };
 
 module.exports = goalController;

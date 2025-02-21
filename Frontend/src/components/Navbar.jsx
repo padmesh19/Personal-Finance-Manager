@@ -40,12 +40,15 @@ export function Navbar() {
     const logoutUser = async () => {
         try {
             const response = await authServices.logout()
-            toast.success('Logout Successful')
-            dispatch(clearUser())
-            navigate('/auth/login', {
-                replace: true,
-                state: { from: location },
-            })
+            if (response.status == 200) {
+                toast.success('Logout Successful')
+                dispatch(clearUser())
+                navigate('/auth/login', {
+                    replace: true,
+                    state: { from: location },
+                })
+
+            }
         } catch (error) {
             toast.error('Something went wrong...')
         }

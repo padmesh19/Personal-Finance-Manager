@@ -8,7 +8,7 @@ import {
 import { toast } from 'react-toastify'
 import { Link, useNavigate } from 'react-router'
 import authServices from '../../services/authServices'
-import { setIsLoading, setUser } from '../../redux/features/userSlice'
+import { setIsLoading, setUser, userState } from '../../redux/features/userSlice'
 import { fetchBudget } from '@/redux/features/budgetSlice'
 import { fetchCategory } from '@/redux/features/categorySlice'
 import { fetchTransaction } from '@/redux/features/transactionSlice'
@@ -21,6 +21,7 @@ import { useState } from 'react'
 const Login = () => {
     const email = useSelector(selectEmail)
     const password = useSelector(selectPassword)
+    const {user} = useSelector(userState)
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -77,13 +78,6 @@ const Login = () => {
                     dispatch(setEmail(''))
                     dispatch(setPassword(''))
                     dispatch(setIsLoading(false))
-
-                    if (response) {
-                        dispatch(fetchBudget())
-                        dispatch(fetchCategory())
-                        dispatch(fetchTransaction())
-                        dispatch(fetchGoal())
-                    }
 
                     // redirect to home page
                     setTimeout(() => {

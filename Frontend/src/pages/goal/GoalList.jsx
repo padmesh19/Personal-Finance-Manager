@@ -17,7 +17,6 @@ import { goalState } from "@/redux/features/goalSlice";
 import { Badge } from "@/components/ui/badge";
 
 export default function GoalList() {
-  const dispatch = useDispatch();
   const { goals } = useSelector(
     goalState
   );

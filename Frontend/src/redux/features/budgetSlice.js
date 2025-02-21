@@ -80,7 +80,12 @@ const budgetSlice = createSlice({
         isExport: false,
         error: null,
     },
-    reducers: {},
+    reducers: {
+        clearBudget: (state) => {
+            state.budgets = null
+            console.log('hi',state.budgets)
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchBudget.pending, (state) => {
@@ -105,7 +110,7 @@ const budgetSlice = createSlice({
                 state.isExport = false
             })
             .addCase(addBudget.fulfilled, (state, action) => {
-              state.budgets.unshift(action.payload);
+                state.budgets.unshift(action.payload)
             })
             .addCase(updateBudget.fulfilled, (state, action) => {
                 const index = state.budgets.findIndex(
@@ -120,5 +125,9 @@ const budgetSlice = createSlice({
             })
     },
 })
+
+export const { clearBudget } = budgetSlice.actions;
+
+export const budgetState = (state) => state.budget;
 
 export default budgetSlice.reducer

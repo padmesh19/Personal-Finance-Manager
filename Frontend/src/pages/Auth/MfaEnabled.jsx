@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import { useNavigate, useSearchParams } from 'react-router'
 import authServices from '../../services/authServices'
@@ -11,12 +11,13 @@ import { fetchCategory } from '@/redux/features/categorySlice'
 import { fetchTransaction } from '@/redux/features/transactionSlice'
 import { fetchGoal } from '@/redux/features/goalSlice'
 import { setEmail, setPassword } from '@/redux/features/registerSlice'
-import { setUser } from '@/redux/features/userSlice'
+import { setIsLoading, setUser, userState } from '@/redux/features/userSlice'
 
 const MfaEnabled = () => {
     const dispatch = useDispatch()
     const [searchParams] = useSearchParams()
     const email = searchParams.get('email')
+    const { user } = useSelector(userState);
 
     const [mfaSecret, setMfaSecret] = useState('')
     const [error, setError] = useState('')
@@ -48,14 +49,12 @@ const MfaEnabled = () => {
                 // Fetch user data
                 const userResponse = await authServices.me()
                 dispatch(setUser(userResponse.data))
+                
 
                 // Clear form & fetch data
                 dispatch(setEmail(''))
                 dispatch(setPassword(''))
-                dispatch(fetchBudget())
-                dispatch(fetchCategory())
-                dispatch(fetchTransaction())
-                dispatch(fetchGoal())
+                dispatch(setIsLoading(false))
 
                 // Redirect to dashboard
                 setTimeout(() => {
